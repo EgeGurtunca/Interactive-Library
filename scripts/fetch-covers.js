@@ -42,6 +42,7 @@ async function searchCoverId(fields) {
       { title: b.title },
     ].filter(Boolean);
 
+    
     let coverId = null;
     for (const fields of attempts) {
       try {
