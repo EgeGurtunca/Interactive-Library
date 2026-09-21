@@ -4,13 +4,13 @@ Oturum korumalı bir kitap kütüphanesi web uygulaması. Kitaplar arasında ara
 
 ## Teknolojiler
 
-- **Node.js + Express 5** — web sunucusu ve API
-- **better-sqlite3** — SQLite veritabanı (`library.db`)
-- **express-session** — oturum yönetimi (giriş zorunlu, `httpOnly` + `SameSite=Lax` cookie)
-- **helmet** — güvenlik başlıkları (CSP dahil)
-- **Node crypto (scrypt)** — şifre hash'leme (ek bağımlılık yok)
-- **Vanilla JS + HTML/CSS** — arayüz (`public/`)
-- **node:test + supertest** — API akış testleri (`npm test`)
+- **Node.js + Express 5**: web sunucusu ve API
+- **better-sqlite3**: SQLite veritabanı (`library.db`)
+- **express-session**: oturum yönetimi (giriş zorunlu, `httpOnly` + `SameSite=Lax` cookie)
+- **helmet**: güvenlik başlıkları (CSP dahil)
+- **Node crypto (scrypt)**: şifre hash'leme (ek bağımlılık yok)
+- **Vanilla JS + HTML/CSS**: arayüz (`public/`)
+- **node:test + supertest**: API akış testleri (`npm test`)
 
 ## Kurulum
 
@@ -53,7 +53,7 @@ Kapağı olmayan kitaplar için [Open Library](https://openlibrary.org/dev/docs/
 
 | Rol | Yetkiler |
 |-----|----------|
-| `user` | Kitapları görüntüleme, arama/filtreleme, kişisel raf (favori + okuma durumu), yıldız + yorum, ödünç alma/iade, profil (raf özeti, ödünç geçmişi, değerlendirmeler, şifre değiştirme — üst barda kullanıcı adına tıklayınca açılır) |
+| `user` | Kitapları görüntüleme, arama/filtreleme, kişisel raf (favori + okuma durumu), yıldız + yorum, ödünç alma/iade, profil (raf özeti, ödünç geçmişi, değerlendirmeler, şifre değiştirme, üst barda kullanıcı adına tıklayınca açılır) |
 | `admin` | Ek olarak: kitap ekleme/düzenleme/silme, yorum kaldırma, tüm aktif ödünçleri görme ve iade alma, istatistik paneli |
 
 ## Puanlama ve ödünç kuralları
@@ -75,25 +75,25 @@ Giriş ve kayıt uçları **hız sınırlıdır**: aynı IP'den 10 dakika içind
 
 | Metot | Yol | Yetki | Açıklama |
 |-------|-----|-------|----------|
-| POST | `/api/register` | — | Kayıt — gövde: `{ "username", "password" }` (kullanıcı adı 3–30, şifre ≥ 6 karakter) |
-| POST | `/api/login` | — | Giriş — gövde: `{ "username", "password" }` |
+| POST | `/api/register` | - | Kayıt, gövde: `{ "username", "password" }` (kullanıcı adı 3–30, şifre ≥ 6 karakter) |
+| POST | `/api/login` | - | Giriş, gövde: `{ "username", "password" }` |
 | POST | `/api/logout` | oturum | Oturumu sonlandırır |
 | GET | `/api/me` | oturum | Oturumdaki kullanıcıyı ve rolünü döner |
 | GET | `/api/profile` | oturum | Profil: üyelik bilgisi, raf özeti, değerlendirmeler, ödünç geçmişi (son 50) |
-| POST | `/api/profile/password` | oturum | Şifre değiştirir — gövde: `{ "current", "next" }` (yeni şifre ≥ 6 karakter) |
+| POST | `/api/profile/password` | oturum | Şifre değiştirir, gövde: `{ "current", "next" }` (yeni şifre ≥ 6 karakter) |
 | GET | `/api/genres` | oturum | Mevcut kitap türlerini listeler |
 | GET | `/api/books` | oturum | Kitapları listeler (filtre/sıralama/raf destekli) |
 | POST | `/api/books` | admin | Yeni kitap ekler |
 | PUT | `/api/books/:id` | admin | Kitabı günceller |
 | DELETE | `/api/books/:id` | admin | Kitabı siler |
-| PUT | `/api/books/:id/shelf` | oturum | Kişisel raf — gövde: `{ "favorite": bool, "status": "read" \| "toread" \| null }` (alanlar isteğe bağlı) |
+| PUT | `/api/books/:id/shelf` | oturum | Kişisel raf, gövde: `{ "favorite": bool, "status": "read" \| "toread" \| null }` (alanlar isteğe bağlı) |
 | GET | `/api/books/:id/reviews` | oturum | Kitabın değerlendirmelerini listeler (`mine` alanıyla) |
-| PUT | `/api/books/:id/review` | oturum | Kendi değerlendirmeni ekler/günceller — gövde: `{ "rating": 1–5, "comment"? }` |
+| PUT | `/api/books/:id/review` | oturum | Kendi değerlendirmeni ekler/günceller, gövde: `{ "rating": 1–5, "comment"? }` |
 | DELETE | `/api/books/:id/review` | oturum | Kendi değerlendirmeni siler |
 | DELETE | `/api/books/:id/reviews/:userId` | admin | Bir kullanıcının değerlendirmesini kaldırır |
 | POST | `/api/books/:id/borrow` | oturum | Kitabı ödünç alır (stok + limit + rezervasyon sırası kontrolü, 14 gün) |
 | POST | `/api/books/:id/return` | oturum | Ödünç alınan kitabı iade eder |
-| POST | `/api/books/:id/reserve` | oturum | Stokta olmayan kitap için sıraya girer — dönen gövde: `{ "position" }` |
+| POST | `/api/books/:id/reserve` | oturum | Stokta olmayan kitap için sıraya girer, dönen gövde: `{ "position" }` |
 | DELETE | `/api/books/:id/reserve` | oturum | Aktif rezervasyonu iptal eder |
 | GET | `/api/recommendations` | oturum | Kişiselleştirilmiş kitap önerileri (en fazla 12) |
 | GET | `/api/my/alerts` | oturum | Uyarılar: `overdue`, `dueSoon` (≤ 3 gün), `ready` (sırası gelen rezervasyonlar) |
@@ -103,11 +103,11 @@ Giriş ve kayıt uçları **hız sınırlıdır**: aynı IP'den 10 dakika içind
 
 ### `/api/books` sorgu parametreleri
 
-- `search` — başlık veya yazarda arama
-- `genre` — türe göre filtre (örn. `Roman`, `Bilim Kurgu`)
-- `yearMin` / `yearMax` — yayın yılı aralığı
-- `shelf` — kişisel raf filtresi: `favorites`, `read`, `toread`, `borrowed`
-- `sort` — `title` (varsayılan), `year-asc`, `year-desc`, `rating` (ortalama puana göre)
+- `search`: başlık veya yazarda arama
+- `genre`: türe göre filtre (örn. `Roman`, `Bilim Kurgu`)
+- `yearMin` / `yearMax`, yayın yılı aralığı
+- `shelf`: kişisel raf filtresi: `favorites`, `read`, `toread`, `borrowed`
+- `sort`: `title` (varsayılan), `year-asc`, `year-desc`, `rating` (ortalama puana göre)
 
 Dönen her kitapta oturumdaki kullanıcıya özel alanlar bulunur: `favorite` (0/1), `status` (`read`/`toread`/`null`), `my_due` (aktif ödünç iade tarihi veya `null`), `my_queue_pos` (rezervasyon sırası, 0 = yok); ayrıca `avg_rating` (ortalama puan), `review_count`, `available` (müsait kopya sayısı) ve `reservation_count` (aktif rezervasyon sayısı).
 
@@ -119,12 +119,12 @@ GET /api/books?search=orwell&genre=Bilim%20Kurgu&sort=rating&shelf=favorites
 
 ## Veritabanı şeması
 
-- **books** — id, title, title_en, author, genre, year, pages, rating (seed puanı), copies (kopya stoku), description, cover_url
-- **users** — id, username (benzersiz, harf duyarsız), password_hash (scrypt), role (`admin`/`user`), created_at
-- **user_books** — user_id + book_id (bileşik anahtar), favorite (0/1), status (`read`/`toread`)
-- **reviews** — user_id + book_id (bileşik anahtar), rating (1–5), comment, created_at
-- **loans** — id, user_id, book_id, borrowed_at, due_at, returned_at (`null` = hâlâ ödünçte)
-- **reservations** — id, user_id, book_id, created_at, status (`active`/`fulfilled`/`cancelled`; kuyruk sırası = id sırası)
+- **books**: id, title, title_en, author, genre, year, pages, rating (seed puanı), copies (kopya stoku), description, cover_url
+- **users**: id, username (benzersiz, harf duyarsız), password_hash (scrypt), role (`admin`/`user`), created_at
+- **user_books**: user_id + book_id (bileşik anahtar), favorite (0/1), status (`read`/`toread`)
+- **reviews**: user_id + book_id (bileşik anahtar), rating (1–5), comment, created_at
+- **loans**: id, user_id, book_id, borrowed_at, due_at, returned_at (`null` = hâlâ ödünçte)
+- **reservations**: id, user_id, book_id, created_at, status (`active`/`fulfilled`/`cancelled`; kuyruk sırası = id sırası)
 
 Kullanıcı veya kitap silinince bağlı satırlar da silinir (CASCADE).
 
