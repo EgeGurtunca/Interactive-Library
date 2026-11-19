@@ -19,6 +19,7 @@ async function searchCoverId(fields) {
 }
 
 
+
 (async () => {
   const books = db.prepare(
     `SELECT id, title, title_en, author FROM books WHERE cover_url IS NULL OR cover_url = ''`
@@ -41,6 +42,7 @@ async function searchCoverId(fields) {
       { title: b.title },
     ].filter(Boolean);
 
+    
     let coverId = null;
     for (const fields of attempts) {
       try {

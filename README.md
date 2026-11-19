@@ -108,13 +108,17 @@ Giriş ve kayıt uçları **hız sınırlıdır**: aynı IP'den 10 dakika içind
 - `yearMin` / `yearMax`, yayın yılı aralığı
 - `shelf`: kişisel raf filtresi: `favorites`, `read`, `toread`, `borrowed`
 - `sort`: `title` (varsayılan), `year-asc`, `year-desc`, `rating` (ortalama puana göre)
+- `page`: sayfa numarası (varsayılan 1; son sayfadan büyükse son sayfa döner)
+- `pageSize`: sayfa başına kitap (varsayılan 24, en fazla 100)
+
+Yanıt gövdesi: `{ "count", "page", "pageCount", "pageSize", "books" }`. `count` filtreye uyan toplam kitap sayısıdır.
 
 Dönen her kitapta oturumdaki kullanıcıya özel alanlar bulunur: `favorite` (0/1), `status` (`read`/`toread`/`null`), `my_due` (aktif ödünç iade tarihi veya `null`), `my_queue_pos` (rezervasyon sırası, 0 = yok); ayrıca `avg_rating` (ortalama puan), `review_count`, `available` (müsait kopya sayısı) ve `reservation_count` (aktif rezervasyon sayısı).
 
 Örnek:
 
 ```
-GET /api/books?search=orwell&genre=Bilim%20Kurgu&sort=rating&shelf=favorites
+GET /api/books?search=orwell&genre=Bilim%20Kurgu&sort=rating&shelf=favorites&page=2&pageSize=12
 ```
 
 ## Veritabanı şeması
@@ -150,6 +154,6 @@ npm test
 └── public/
     ├── index.html   # Kütüphane arayüzü
     ├── login.html   # Giriş / kayıt sayfası
-    ├── js/          # app.js, login.js
+    ├── js/          # app.js, login.js, theme.js (görünüm ayarları)
     └── css/         # style.css
 ```
